@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, Platform, TouchableHighlight,Dimensions, ScrollView, } from 'react-native';
+import { StyleSheet, Text, View, Image, Platform, TouchableHighlight,Dimensions, ScrollView,FlatList,ListView } from 'react-native';
 import{Content ,Icon,Container,Button,Header,Drawer,Thumbnail,Footer,Item,Input,Left} from 'native-base';
 import { DrawerNavigator,StackNavigator,TabNavigator } from 'react-navigation';
 import ActionButton from 'react-native-action-button';
@@ -16,10 +16,60 @@ import TopChartsScreen from './src/Components/TopCharts.js';
 
   constructor(props) {
     super(props);
-    this.state = {text: ''};
+
+    this.state = {
+      chatHistory:[],
+      input: '',
+      context:'',
+      message:[],
+      botMS:'',
+
+        };
+
+
   }
 
+
+//fetching bot's greeting message
+componentWillMount() {
+  var usrinp =  "hello";
+  var data = {context: "",
+        input : "text : ", usrinp}
+
+  fetch('https://my-app.cession48.hasura-app.io/api/message',{
+    method: 'POST',
+    body: data,
+    headers: {
+     'Content-Type':'application/x-www-form-urlencoded'
+    }
+  })
+  .then(results => results.json())
+  .then( data => {
+    console.log("first");
+    console.log(data);
+    let mes=data.output.text[0];
+    let con=data.context;
+    console.log("recieved context" )
+    console.log(con);
+    this.setState({chatHistory: [
+        {
+          type: 'bot',
+          message: mes,
+        }
+      ], context: con});
+  })
+}
+
+
+onMessageSend(){
+var ms = this.state.input;
+ var obj= { type: 'user', message: ms};
+this.setState({chatHistory: this.state.chatHistory.concat(obj),message: this.state.message.concat(ms),input:''});
+
+}
+
   render() {
+    const {message,chatHistory}=this.state;
 
 
     const window = Dimensions.get('window')
@@ -36,40 +86,49 @@ import TopChartsScreen from './src/Components/TopCharts.js';
 
           <ScrollView style={styles.container}>
 
-              <View style={styles.leftBubble}>
+          {this.state.chatHistory.map( (chat , index) => {
+                          (chat.type === 'bot') ?
+            (   <View key={index} style={styles.leftBubble}>
               <Left>
                 <Thumbnail small source={{ uri: 'https://thumb1.shutterstock.com/display_pic_with_logo/2826565/737510584/stock-vector-chatbot-icon-cute-robot-working-behind-laptop-modern-bot-sign-design-smiling-customer-service-737510584.jpg' }} />
               </Left>
                 <View style={styles.leftBubbleText}>
-                  <Text style={styles.leftBubbleTextStyle}>Hi! What would you like me to do?</Text>
-                  <Text style={styles.leftBubbleTextStyle}>I can play songs, Video for you  :-).</Text>
+                  <Text style={styles.leftBubbleTextStyle}>{chat.message}</Text>
+
                 </View>
                 <View style={styles.leftBubbleTime}>
                   <Text style={styles.leftBubbleTimeStyle}>16:33</Text>
                 </View>
 
-              </View>
-
-              <View style={styles.rightBubble}>
-                <View style={styles.leftBubbleText}>
-                  <Text style={styles.leftBubbleTextStyle}>I want to listen top 10 Bollywood Songs.</Text>
-                </View>
-                <View style={styles.leftBubbleTime}>
-                  <Text style={styles.leftBubbleTimeStyle}>16:33</Text>
-                </View>
-              </View>
-
-
-
-
+              </View>):
+              (<View key={index} style={styles.rightBubble}>
+                 <View style={styles.leftBubbleText}>
+                   <Text key={index} style={styles.leftBubbleTextStyle}>{chat.message}</Text>
+                 </View>
+                 <View style={styles.leftBubbleTime}>
+                   <Text style={styles.leftBubbleTimeStyle}>16:33</Text>
+                 </View>
+               </View>)})}
           </ScrollView>
       </Content>
       <Footer>
-              <Item style={{flex: 1, paddingTop: 20,backgroundColor:'#fff'}}>
+              <Item style={{flex: 1,backgroundColor:'#fff'}}>
                   <Input
                   placeholder='Type your message here'
-                  onChangeText={(text) => this.setState({text})}/>
+
+
+                  onChangeText={(text) => {
+                    this.setState({
+                      input:text,
+                    });
+                  }}
+                    value = {this.state.input}
+
+                  />
+                  <Button  onPress={()=> this.onMessageSend()}>
                   <Icon active name='send' />
+
+                  </Button>
                 </Item>
       </Footer>
       </Container>

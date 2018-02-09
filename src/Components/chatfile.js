@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ActivityIndicator, ListView, Text, View } from 'react-native';
+import { ActivityIndicator, ListView, Text, View ,TextInput} from 'react-native';
 import {Container,Content,Button,Icon,Header,Footer,Drawer,Thumbnail,Right, Body,Title,Left , Item,Input} from 'native-base';
 export default class Movies extends Component {
   constructor(props) {
@@ -34,7 +34,7 @@ export default class Movies extends Component {
                   <Item style={{flex: 1, paddingTop: 20,backgroundColor:'#fff'}}>
                       <Input
                       placeholder='Type your message here'
-                      onChangeText={(text) => this.setState({text})}/>
+                      onChangeText={(text) => this.setState({input:text})}/>
                       <Icon active name='send' />
                     </Item>
           </Footer>
