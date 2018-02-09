@@ -21,8 +21,8 @@ import TopChartsScreen from './src/Components/TopCharts.js';
       chatHistory:[],
       input: '',
       context:'',
-      message:[],
-      botMS:'',
+
+
 
         };
 
@@ -32,23 +32,23 @@ import TopChartsScreen from './src/Components/TopCharts.js';
 
 //fetching bot's greeting message
 componentWillMount() {
-  var usrinp =  "hello";
-  var data = {context: "",
-        input : "text : ", usrinp}
+
+      var inp = 'artist jagjit singh'
+      var vcontext = {}
 
   fetch('https://my-app.cession48.hasura-app.io/api/message',{
     method: 'POST',
-    body: data,
-    headers: {
-     'Content-Type':'application/x-www-form-urlencoded'
-    }
+  body: JSON.stringify({ input : {text: inp}, context : vcontext} ),
+   headers: { 'Content-Type':'application/json; charset=UTF-8' }
   })
   .then(results => results.json())
   .then( data => {
     console.log("first");
     console.log(data);
+
     let mes=data.output.text[0];
     let con=data.context;
+    alert(data.context);
     console.log("recieved context" )
     console.log(con);
     this.setState({chatHistory: [
@@ -58,13 +58,35 @@ componentWillMount() {
         }
       ], context: con});
   })
+
 }
 
 
 onMessageSend(){
 var ms = this.state.input;
  var obj= { type: 'user', message: ms};
-this.setState({chatHistory: this.state.chatHistory.concat(obj),message: this.state.message.concat(ms),input:''});
+this.setState({chatHistory: this.state.chatHistory.concat(obj),input:''});
+
+var inp = this.state.input
+     var vcontext = this.state.context
+
+ fetch('https://my-app.cession48.hasura-app.io/api/message',{
+   method: 'POST',
+ body: JSON.stringify({ input : {text: inp}, context : vcontext} ),
+  headers: { 'Content-Type':'application/json; charset=UTF-8' }
+ })
+ .then(results => results.json())
+ .then( data => {
+   let mes=data.output.text[0];
+   let con=data.context;
+  
+   this.setState({chatHistory: [
+       {
+         type: 'bot',
+         message: mes,
+       }
+     ], context: con});
+ })
 
 }
 
