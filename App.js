@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, Platform, TouchableHighlight,Dimensions, ScrollView,FlatList,ListView } from 'react-native';
-import{Content ,Icon,Container,Button,Header,Drawer,Thumbnail,Footer,Item,Input,Left} from 'native-base';
+import { StyleSheet, View, Image, Platform, TouchableHighlight,Dimensions, ScrollView,FlatList,ListView } from 'react-native';
+import{Content ,Icon,Container,Button,Header,Drawer,Thumbnail,Footer,Item,Input,Text,Left} from 'native-base';
 import { DrawerNavigator,StackNavigator,TabNavigator } from 'react-navigation';
 import ActionButton from 'react-native-action-button';
 
@@ -18,11 +18,12 @@ import TopChartsScreen from './src/Components/TopCharts.js';
     super(props);
 
     this.state = {
+
       chatHistory:[],
       input: '',
       context:'',
-
-
+      UserInput:[],
+      showInput:'',
 
         };
 
@@ -31,15 +32,15 @@ import TopChartsScreen from './src/Components/TopCharts.js';
 
 
 //fetching bot's greeting message
-componentWillMount() {
+componentDidMount() {
 
       var inp = 'artist jagjit singh'
       var vcontext = {}
 
   fetch('https://my-app.cession48.hasura-app.io/api/message',{
     method: 'POST',
-  body: JSON.stringify({ input : {text: inp}, context : vcontext} ),
-   headers: { 'Content-Type':'application/json; charset=UTF-8' }
+    body: JSON.stringify({ input : {text: inp}, context : vcontext} ),
+    headers: { 'Content-Type':'application/json;charset=UTF-8' }
   })
   .then(results => results.json())
   .then( data => {
@@ -48,7 +49,7 @@ componentWillMount() {
 
     let mes=data.output.text[0];
     let con=data.context;
-    alert(data.context);
+
     console.log("recieved context" )
     console.log(con);
     this.setState({chatHistory: [
@@ -58,6 +59,9 @@ componentWillMount() {
         }
       ], context: con});
   })
+  .catch((error) => {
+      alert(error);
+      });
 
 }
 
@@ -65,10 +69,10 @@ componentWillMount() {
 onMessageSend(){
 var ms = this.state.input;
  var obj= { type: 'user', message: ms};
-this.setState({chatHistory: this.state.chatHistory.concat(obj),input:''});
+this.setState({ChatHistory: this.state.chatHistory.concat(obj),UserInput:this.state.UserInput.concat(obj),showInput:ms,input:''});
 
-var inp = this.state.input
-     var vcontext = this.state.context
+    var inp = ms
+    var vcontext = this.state.context
 
  fetch('https://my-app.cession48.hasura-app.io/api/message',{
    method: 'POST',
@@ -79,20 +83,22 @@ var inp = this.state.input
  .then( data => {
    let mes=data.output.text[0];
    let con=data.context;
-  
-   this.setState({chatHistory: [
-       {
-         type: 'bot',
-         message: mes,
-       }
-     ], context: con});
+var newObj = {
+   type: 'bot',
+   message: mes,
+ }
+   this.setState({
+     chatHistory: this.state.chatHistory.concat(newObj),
+     context: con});
  })
 
 }
 
-  render() {
-    const {message,chatHistory}=this.state;
 
+//bot message render function.
+
+
+  render() {
 
     const window = Dimensions.get('window')
     const imageDimensions = {
@@ -106,32 +112,35 @@ var inp = this.state.input
         </View>
         <Content style={{flex: 1}}>
 
-          <ScrollView style={styles.container}>
-
-          {this.state.chatHistory.map( (chat , index) => {
-                          (chat.type === 'bot') ?
-            (   <View key={index} style={styles.leftBubble}>
+        <ScrollView style={styles.container}>
+        <View>
+      {this.state.chatHistory.map(( chat,index) =>
+        <View  style={styles.leftBubble}>
               <Left>
                 <Thumbnail small source={{ uri: 'https://thumb1.shutterstock.com/display_pic_with_logo/2826565/737510584/stock-vector-chatbot-icon-cute-robot-working-behind-laptop-modern-bot-sign-design-smiling-customer-service-737510584.jpg' }} />
               </Left>
                 <View style={styles.leftBubbleText}>
-                  <Text style={styles.leftBubbleTextStyle}>{chat.message}</Text>
-
-                </View>
-                <View style={styles.leftBubbleTime}>
-                  <Text style={styles.leftBubbleTimeStyle}>16:33</Text>
+                   < Text key={index}style={styles.leftBubbleTextStyle}>{alert(chat.message)}</Text>
                 </View>
 
-              </View>):
-              (<View key={index} style={styles.rightBubble}>
-                 <View style={styles.leftBubbleText}>
-                   <Text key={index} style={styles.leftBubbleTextStyle}>{chat.message}</Text>
-                 </View>
-                 <View style={styles.leftBubbleTime}>
-                   <Text style={styles.leftBubbleTimeStyle}>16:33</Text>
-                 </View>
-               </View>)})}
-          </ScrollView>
+              <View style={styles.leftBubbleTime}>
+                <Text style={styles.leftBubbleTimeStyle}>16:33</Text>
+              </View>
+        </View>)}
+{this.state.UserInput.map(( input,index) =>
+            <View  style={styles.rightBubble}>
+
+                <View style={styles.leftBubbleText}>
+                 < Text key={index}style={styles.leftBubbleTextStyle}>{input.message}</Text>
+                </View>
+
+              <View style={styles.leftBubbleTime}>
+                <Text style={styles.leftBubbleTimeStyle}>16:33</Text>
+              </View>
+        </View> )}
+
+        </View>
+        </ScrollView>
       </Content>
       <Footer>
               <Item style={{flex: 1,backgroundColor:'#fff'}}>
