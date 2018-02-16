@@ -9,6 +9,7 @@ import InvertibleScrollView from 'react-native-invertible-scroll-view';
 
 import SideBar from './src/Components/SideBar.js';
 import TopChartsScreen from './src/Components/TopCharts.js';
+import user from './src/Components/user.js';
 
  class App extends Component {
 
@@ -24,11 +25,15 @@ import TopChartsScreen from './src/Components/TopCharts.js';
       context:'',
       UserInput:[],
       showInput:'',
+      toggle :false,
+      type : 'user',
 
         };
 
 
+
   }
+
 
 
 //fetching bot's greeting message
@@ -54,22 +59,24 @@ componentDidMount() {
     console.log(con);
     this.setState({chatHistory: [
         {
-          type: 'bot',
+          type: 'BOT : ',
           message: mes,
         }
       ], context: con});
   })
   .catch((error) => {
-      alert(error);
+      console.log(error);
       });
 
 }
 
 
 onMessageSend(){
+  let messageTextStyle;
 var ms = this.state.input;
- var obj= { type: 'user', message: ms};
-this.setState({ChatHistory: this.state.chatHistory.concat(obj),UserInput:this.state.UserInput.concat(obj),showInput:ms,input:''});
+ var obj= { type: 'USER : ', message: ms};
+this.setState({ChatHistory: this.state.chatHistory.push(obj),showInput:ms,input:''});
+
 
     var inp = ms
     var vcontext = this.state.context
@@ -84,7 +91,7 @@ this.setState({ChatHistory: this.state.chatHistory.concat(obj),UserInput:this.st
    let mes=data.output.text[0];
    let con=data.context;
 var newObj = {
-   type: 'bot',
+   type: 'BOT : ',
    message: mes,
  }
    this.setState({
@@ -96,6 +103,7 @@ var newObj = {
 
 
 //bot message render function.
+
 
 
   render() {
@@ -113,31 +121,20 @@ var newObj = {
         <Content style={{flex: 1}}>
 
         <ScrollView style={styles.container}>
-        <View>
-      {this.state.chatHistory.map(( chat,index) =>
-        <View  style={styles.leftBubble}>
-              <Left>
-                <Thumbnail small source={{ uri: 'https://thumb1.shutterstock.com/display_pic_with_logo/2826565/737510584/stock-vector-chatbot-icon-cute-robot-working-behind-laptop-modern-bot-sign-design-smiling-customer-service-737510584.jpg' }} />
-              </Left>
-                <View style={styles.leftBubbleText}>
-                   < Text key={index}style={styles.leftBubbleTextStyle}>{alert(chat.message)}</Text>
+
+
+        <View>{this.state.chatHistory.map(( chat,index) =>
+        <View  style={chat.type === 'BOT : ' ? styles.leftBubble : styles.rightBubble}>
+        <Left>
+          <Thumbnail small source={{  uri: chat.type === 'BOT : ' ?'https://thumb1.shutterstock.com/display_pic_with_logo/2826565/737510584/stock-vector-chatbot-icon-cute-robot-working-behind-laptop-modern-bot-sign-design-smiling-customer-service-737510584.jpg':'https://cdn1.iconfinder.com/data/icons/mix-color-4/502/Untitled-1-512.png' }} />
+        </Left>
+
+                <View style={chat.type === 'BOT : ' ? styles.leftBubble : styles.rightBubble}>
+                   < Text key={index}style={styles.leftBubbleTextStyle}>{[chat.message]}</Text>
                 </View>
 
-              <View style={styles.leftBubbleTime}>
-                <Text style={styles.leftBubbleTimeStyle}>16:33</Text>
-              </View>
         </View>)}
-{this.state.UserInput.map(( input,index) =>
-            <View  style={styles.rightBubble}>
 
-                <View style={styles.leftBubbleText}>
-                 < Text key={index}style={styles.leftBubbleTextStyle}>{input.message}</Text>
-                </View>
-
-              <View style={styles.leftBubbleTime}>
-                <Text style={styles.leftBubbleTimeStyle}>16:33</Text>
-              </View>
-        </View> )}
 
         </View>
         </ScrollView>
@@ -164,6 +161,7 @@ var newObj = {
       </Footer>
       </Container>
     );
+
   }
 }
 
@@ -172,12 +170,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+
   },
   leftBubble: {
       flex: 1,
       flexDirection: 'row',
       backgroundColor: '#cef442',
-
+      justifyContent: 'center',
       borderRadius: 4,
       minWidth: 66,
       maxWidth: 288,
@@ -186,19 +185,19 @@ const styles = StyleSheet.create({
   rightBubble: {
       flex: 1,
       flexDirection: 'row',
-      backgroundColor: '#a4c2f2',
-
+      backgroundColor: '#e2a3d7',
+      marginBottom: 8,
       borderRadius: 4,
       minWidth: 66,
       maxWidth: 288,
-      justifyContent: 'flex-end',
-      paddingLeft:0,
+      justifyContent: 'center',
+      paddingRight:0,
   },
   leftBubbleText:{
     flex:0,
     maxWidth: 247,
     padding: 8,
-    paddingLeft: 12,
+    paddingLeft: 8,
     paddingRight:0,
   },
   leftBubbleTextStyle:{
