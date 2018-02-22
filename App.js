@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { StyleSheet, View, Image, Platform, TouchableHighlight,Dimensions, ScrollView,FlatList,ListView } from 'react-native';
+import { StyleSheet, View, Image, Platform, TouchableHighlight,Dimensions, ScrollView,FlatList,ListView, WebView} from 'react-native';
 import{Content ,Icon,Container,Button,Header,Drawer,Thumbnail,Footer,Item,Input,Text,Left} from 'native-base';
 import { DrawerNavigator,StackNavigator,TabNavigator } from 'react-navigation';
 import ActionButton from 'react-native-action-button';
@@ -20,14 +20,14 @@ import user from './src/Components/user.js';
 
     this.state = {
 
-      chatHistory:[],
-      input: '',
-      context:'',
-      UserInput:[],
-      showInput:'',
-      toggle :false,
-      type : 'user',
-
+      chatHistory :   [],
+      input       :   '',
+      context     :   '',
+      UserInput   :   [],
+      showInput   :   '',
+      toggle      :   false,
+      type        :   'user',
+      VideoData   :   [],
         };
 
 
@@ -39,7 +39,7 @@ import user from './src/Components/user.js';
 //fetching bot's greeting message
 componentDidMount() {
 
-      var inp = 'artist jagjit singh'
+      var inp = 'hello'
       var vcontext = {}
 
   fetch('https://my-app.cession48.hasura-app.io/api/message',{
@@ -51,9 +51,9 @@ componentDidMount() {
   .then( data => {
     console.log("first");
     console.log(data);
-
     let mes=data.output.text[0];
     let con=data.context;
+
 
     console.log("recieved context" )
     console.log(con);
@@ -63,43 +63,90 @@ componentDidMount() {
           message: mes,
         }
       ], context: con});
+
+
   })
   .catch((error) => {
       console.log(error);
       });
 
-}
+  }
 
 
-onMessageSend(){
-  let messageTextStyle;
-var ms = this.state.input;
- var obj= { type: 'USER : ', message: ms};
-this.setState({ChatHistory: this.state.chatHistory.push(obj),showInput:ms,input:''});
+  onMessageSend(){
+    let messageTextStyle;
+  let mes;
+
+  var ms = this.state.input;
+   var obj= { type: 'USER : ', message: ms};
+  this.setState({ChatHistory: this.state.chatHistory.push(obj),showInput:ms,input:''});
+
+      var Video = [];
+      var inp = ms
+      var vcontext = this.state.context
+
+   fetch('https://my-app.cession48.hasura-app.io/api/message',
+    { method: 'POST',
+   body: JSON.stringify({ input : {text: inp}, context : vcontext} ),
+    headers: { 'Content-Type':'application/json; charset=UTF-8' }
+   })
+   .then(results => results.json())
+   .then( data => {
+     mes=data.output.text[0];
+     let con=data.context;
+     console.log(mes);
+  var newObj = {
+     type: 'BOT : ',
+     message: mes,
+   }
+     this.setState({
+       chatHistory: this.state.chatHistory.concat(newObj),
+       context: con});
 
 
-    var inp = ms
-    var vcontext = this.state.context
+   if(mes ==="Sure. Will display results soon")
+   {
+     console.log(mes);
 
- fetch('https://my-app.cession48.hasura-app.io/api/message',{
-   method: 'POST',
- body: JSON.stringify({ input : {text: inp}, context : vcontext} ),
-  headers: { 'Content-Type':'application/json; charset=UTF-8' }
- })
- .then(results => results.json())
- .then( data => {
-   let mes=data.output.text[0];
-   let con=data.context;
-var newObj = {
-   type: 'BOT : ',
-   message: mes,
+
+
+     return fetch('https://my-app.cession48.hasura-app.io/api/playmusic', {
+       method: 'POST',
+       body: JSON.stringify({
+          q: ms
+
+       }),
+       headers: {
+         "Content-Type": "application/json; charset=UTF-8"
+       }
+   })
+   .then(results => results.json())
+   .then(responseJson => {
+     console.log("Video");
+     console.log(responseJson);
+
+
+     Video.push(responseJson);
+
+     let thumbnail = responseJson[0].thumbnailurl;
+     let videoId = responseJson[0].videoid;
+
+     console.log(videoId);
+
+     this.setState({VideoData: [
+         {
+           ThumbnailUrl:thumbnail,
+          VideoID:videoId,
+        },
+       ]});
+
+
+     console.log(this.state);
+   })
  }
-   this.setState({
-     chatHistory: this.state.chatHistory.concat(newObj),
-     context: con});
- })
+   })
 
-}
+  }
 
 
 //bot message render function.
@@ -107,6 +154,7 @@ var newObj = {
 
 
   render() {
+
 
     const window = Dimensions.get('window')
     const imageDimensions = {
@@ -124,19 +172,29 @@ var newObj = {
 
 
         <View>{this.state.chatHistory.map(( chat,index) =>
-        <View  style={chat.type === 'BOT : ' ? styles.leftBubble : styles.rightBubble}>
-        <Left>
-          <Thumbnail small source={{  uri: chat.type === 'BOT : ' ?'https://thumb1.shutterstock.com/display_pic_with_logo/2826565/737510584/stock-vector-chatbot-icon-cute-robot-working-behind-laptop-modern-bot-sign-design-smiling-customer-service-737510584.jpg':'https://cdn1.iconfinder.com/data/icons/mix-color-4/502/Untitled-1-512.png' }} />
-        </Left>
+          <View  style={chat.type === 'BOT : ' ? styles.leftBubble : styles.rightBubble}>
+                <Left>
+                  <Thumbnail small source={{  uri: chat.type === 'BOT : ' ?'https://thumb1.shutterstock.com/display_pic_with_logo/2826565/737510584/stock-vector-chatbot-icon-cute-robot-working-behind-laptop-modern-bot-sign-design-smiling-customer-service-737510584.jpg':'https://cdn1.iconfinder.com/data/icons/mix-color-4/502/Untitled-1-512.png' }} />
+                </Left>
 
                 <View style={chat.type === 'BOT : ' ? styles.leftBubble : styles.rightBubble}>
                    < Text key={index}style={styles.leftBubbleTextStyle}>{[chat.message]}</Text>
                 </View>
 
-        </View>)}
 
+          </View>)}
+          <View>{this.state.VideoData.map(( Video,i) =>
+            <TouchableHighlight key>
+            <View>
+            <Image source={{uri: Video.ThumbnailUrl}} style={{width: 320, height: 180}}></Image>
+
+            </View>
+            </TouchableHighlight>
+          )}
+          </View>
 
         </View>
+
         </ScrollView>
       </Content>
       <Footer>
@@ -197,7 +255,7 @@ const styles = StyleSheet.create({
     flex:0,
     maxWidth: 247,
     padding: 8,
-    paddingLeft: 8,
+    paddingLeft: 12,
     paddingRight:0,
   },
   leftBubbleTextStyle:{
@@ -205,6 +263,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#000000',
     lineHeight: 18,
+  },
+
+  button: {
+    marginBottom: 30,
+    width: 260,
+    alignItems: 'center',
+    backgroundColor: '#2196F3'
   },
   leftBubbleTime:{
     flex:1,
@@ -221,6 +286,11 @@ const styles = StyleSheet.create({
     lineHeight: 16,
 
   },
+  WebViewContainer: {
+      flex:1,
+      marginTop: (Platform.OS == 'ios') ? 20 : 0,
+
+    },
 });
 //DrawerButton
 const DrawerButton=({navigation})=>(

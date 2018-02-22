@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { Container, Header, Content, List,Title, ListItem, Text,Icon,Left,Button ,Body} from 'native-base';
+
+import { StyleSheet, View, WebView, Platform } from 'react-native';
+
 export default class TopChartsScreen extends Component {
   render() {
     return (
@@ -15,29 +18,29 @@ export default class TopChartsScreen extends Component {
           <Title>List</Title>
         </Body>
         </Header>
-        <Content>
-          <List>
-            <ListItem>
-              <Text>COMEDY</Text>
-            </ListItem>
-            <ListItem >
-              <Text>Hangover</Text>
-            </ListItem>
-            <ListItem>
-              <Text>Horrible Bosses</Text>
-            </ListItem>
-            <ListItem>
-              <Text>Conjuring</Text>
-            </ListItem>
-            <ListItem >
-              <Text>ACTION</Text>
-            </ListItem>
-            <ListItem>
-              <Text>Terminator Genesis</Text>
-            </ListItem>
-          </List>
-        </Content>
+        <View style={{ height: 300 }}>
+
+           <WebView
+                   style={ styles.WebViewContainer }
+                   javaScriptEnabled={true}
+                   domStorageEnabled={true}
+                   source={{uri: 'https://www.youtube.com/watch?v=pJaBe6k9eMw' }}
+           />
+
+       </View>
       </Container>
     );
   }
 }
+
+
+
+const styles = StyleSheet.create({
+
+WebViewContainer: {
+    flex:1,
+    marginTop: (Platform.OS == 'ios') ? 20 : 0,
+
+  }
+
+});
