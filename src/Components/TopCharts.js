@@ -2,9 +2,19 @@ import React, { Component } from 'react';
 import { Container, Header, Content, List,Title, ListItem, Text,Icon,Left,Button ,Body} from 'native-base';
 
 import { StyleSheet, View, WebView, Platform } from 'react-native';
+import {StackNavigator} from 'react-navigation';
 
-export default class TopChartsScreen extends Component {
+export default class TopCharts extends Component {
+
+
+  constructor(props){
+    super(props);
+
+  }
+
   render() {
+    const {state} = this.props.navigation;
+
     return (
       <Container>
       <Header  >
@@ -23,8 +33,9 @@ export default class TopChartsScreen extends Component {
            <WebView
                    style={ styles.WebViewContainer }
                    javaScriptEnabled={true}
-                   domStorageEnabled={true}
-                   source={{uri: 'https://www.youtube.com/watch?v=pJaBe6k9eMw' }}
+
+                    automaticallyAdjustContentInsets={false}
+                   source={{uri: 'https://www.youtube.com/embed/'+`${state.params.youtubeId}` }}
            />
 
        </View>

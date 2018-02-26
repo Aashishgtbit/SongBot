@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # OSX
 #
 .DS_Store
@@ -52,7 +52,6 @@ buck-out/
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
-=======
 # Logs
 logs
 *.log
@@ -111,5 +110,3 @@ typings/
 
 # dotenv environment variables file
 .env
-
->>>>>>> de0f0029b19407172055532bc560eeacac2ccd98

@@ -5,19 +5,11 @@ import { Container, Content, Text, List, ListItem,Thumbnail,Icon, Card,CardItem,
 
 const datas = [
 
-
-
   {
-    name:"SongBot",
+    name:"MusicBot",
     route:"Listen",
     icon:"musical-note"
   },
-  {
-    name:"TopCharts",
-    route:"TopCharts",
-    icon:"ios-star"
-  },
-
 ];
 
 
@@ -28,11 +20,7 @@ export default class SideBar extends React.Component {
       <Container>
         <Content>
         <Card>
-
-
-
           <CardItem>
-
           <List
             dataArray={datas}
             renderRow={data =>
