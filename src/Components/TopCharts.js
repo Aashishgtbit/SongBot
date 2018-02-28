@@ -25,7 +25,7 @@ export default class TopCharts extends Component {
           </Button>
         </Left>
         <Body>
-          <Title>List</Title>
+          <Title>Youtube Viewer</Title>
         </Body>
         </Header>
         <View style={{ height: 300 }}>

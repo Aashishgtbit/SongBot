@@ -45,12 +45,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.songbot",
+    package = "com.musicbot",
 )
 
 android_resource(
     name = "res",
-    package = "com.songbot",
+    package = "com.musicbot",
     res = "src/main/res",
 )
 
