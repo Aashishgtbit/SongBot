@@ -1,4 +1,4 @@
-package com.songbot;
+package com.musicbot;
 
 import android.app.Application;
 
